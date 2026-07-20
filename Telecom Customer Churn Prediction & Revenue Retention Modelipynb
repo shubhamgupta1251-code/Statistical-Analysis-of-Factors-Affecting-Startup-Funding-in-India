@@ -1,0 +1,144 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNvK7buXj9z77+KuonToHF2",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/shubhamgupta1251-code/Statistical-Analysis-of-Factors-Affecting-Startup-Funding-in-India/blob/main/Telecom%20Customer%20Churn%20Prediction%20%26%20Revenue%20Retention%20Modelipynb\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 6,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "2yU5dUm3Z_ot",
+        "outputId": "5d8efd13-35ad-4278-ae83-12f5ab3c401f"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "⏳ Loading live corporate churn data from IBM storage...\n",
+            "\n",
+            "📊 --- CORPORATE DATA INSIGHTS ---\n",
+            "Overall Corporate Baseline Churn Rate: 26.54%\n",
+            "\n",
+            "📋 Churn Probability Sorted by Contract Type (Crucial Business Metric):\n",
+            "Contract\n",
+            "Month-to-month    42.709677\n",
+            "One year          11.269518\n",
+            "Two year           2.831858\n",
+            "Name: Churn_Numeric, dtype: float64\n",
+            "\n",
+            "📈 --- STATISTICAL MODEL EVALUATION ---\n",
+            "ROC-AUC Score (Model Discriminatory Power): 0.8328\n",
+            "\n",
+            "Classification Report (Precision & Recall Profile):\n",
+            "              precision    recall  f1-score   support\n",
+            "\n",
+            "           0       0.83      0.91      0.87      1036\n",
+            "           1       0.66      0.48      0.56       373\n",
+            "\n",
+            "    accuracy                           0.80      1409\n",
+            "   macro avg       0.75      0.70      0.71      1409\n",
+            "weighted avg       0.79      0.80      0.79      1409\n",
+            "\n",
+            "🧠 --- ACTIONABLE BUSINESS INSIGHTS FOR MANAGEMENT ---\n",
+            "• Every unit change in 'tenure' statistically decreases the probability of a customer churning.\n",
+            "• Every unit change in 'MonthlyCharges' statistically increases the probability of a customer churning.\n",
+            "• Every unit change in 'TotalCharges' statistically increases the probability of a customer churning.\n"
+          ]
+        }
+      ],
+      "source": [
+        "# =====================================================================\n",
+        "# PROJECT: Corporate Customer Churn & Retention Predictive Analytics\n",
+        "# DOMAIN: SaaS / Telecom / E-commerce Business Analytics\n",
+        "# AUTHOR: M.Sc. Statistics Portfolio\n",
+        "# =====================================================================\n",
+        "\n",
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "import matplotlib.pyplot as plt\n",
+        "import seaborn as sns\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score\n",
+        "\n",
+        "# 1. FETCH THE INDUSTRY STANDARD RAW DATASET\n",
+        "print(\"⏳ Loading live corporate churn data from IBM storage...\")\n",
+        "url = \"https://raw.githubusercontent.com/srivatsan88/YouTubeLI/master/dataset/WA_Fn-UseC_-Telco-Customer-Churn.csv\"\n",
+        "df = pd.read_csv(url)\n",
+        "\n",
+        "# 2. DATA CLEANING & STATISTICAL PRE-PROCESSING\n",
+        "# Convert total charges to numeric and fill empty rows with the median value\n",
+        "df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')\n",
+        "df['TotalCharges'] = df['TotalCharges'].fillna(df['TotalCharges'].median()) # Addressed FutureWarning\n",
+        "\n",
+        "# Map target text variable 'Churn' (Yes/No) to statistical binary integers (1/0)\n",
+        "df['Churn_Numeric'] = df['Churn'].map({'Yes': 1, 'No': 0})\n",
+        "\n",
+        "# 3. ADVANCED EXPLORATORY DATA ANALYSIS & HYPOTHESIS CONFIRMATION\n",
+        "print(\"\\n📊 --- CORPORATE DATA INSIGHTS ---\")\n",
+        "churn_rate = df['Churn_Numeric'].mean() * 100\n",
+        "print(f\"Overall Corporate Baseline Churn Rate: {churn_rate:.2f}%\")\n",
+        "\n",
+        "# Show how contract type impact client departures\n",
+        "print(\"\\n📋 Churn Probability Sorted by Contract Type (Crucial Business Metric):\")\n",
+        "print(df.groupby('Contract')['Churn_Numeric'].mean() * 100)\n",
+        "\n",
+        "# 4. VARIABLE SELECTION & STATISTICAL MODEL TRAINING\n",
+        "# We select key numerical drivers: how long they stayed, monthly fees, and total spend\n",
+        "X = df[['tenure', 'MonthlyCharges', 'TotalCharges']]\n",
+        "y = df['Churn_Numeric']\n",
+        "\n",
+        "# Split data into training sets (80%) and validation testing sets (20%)\n",
+        "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)\n",
+        "\n",
+        "# Initialize and train a robust Logistic Regression classifier\n",
+        "model = LogisticRegression(max_iter=1000)\n",
+        "model.fit(X_train, y_train)\n",
+        "\n",
+        "# 5. MODEL PREDICTIONS AND REVENUE VALUE CALCULATIONS\n",
+        "y_pred = model.predict(X_test)\n",
+        "y_prob = model.predict_proba(X_test)[:, 1]\n",
+        "\n",
+        "# 6. MODEL PERFORMANCE TESTING FOR RECRUITERS\n",
+        "print(\"\\n📈 --- STATISTICAL MODEL EVALUATION ---\")\n",
+        "print(f\"ROC-AUC Score (Model Discriminatory Power): {roc_auc_score(y_test, y_prob):.4f}\")\n",
+        "print(\"\\nClassification Report (Precision & Recall Profile):\")\n",
+        "print(classification_report(y_test, y_pred))\n",
+        "\n",
+        "# 7. EXTRACTING STATISTICAL INSIGHTS FOR BUSINESS STRATEGY\n",
+        "print(\"🧠 --- ACTIONABLE BUSINESS INSIGHTS FOR MANAGEMENT ---\")\n",
+        "coefficients = model.coef_[0]\n",
+        "for col, coef in zip(X.columns, coefficients):\n",
+        "    direction = \"increases\" if coef > 0 else \"decreases\"\n",
+        "    print(f\"• Every unit change in '{col}' statistically {direction} the probability of a customer churning.\")"
+      ]
+    }
+  ]
+}
