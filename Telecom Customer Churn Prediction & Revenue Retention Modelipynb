@@ -4,7 +4,7 @@
   "metadata": {
     "colab": {
       "provenance": [],
-      "authorship_tag": "ABX9TyNvK7buXj9z77+KuonToHF2",
+      "authorship_tag": "ABX9TyM+7drI8TT45Dcq4wf3rcjJ",
       "include_colab_link": true
     },
     "kernelspec": {
@@ -28,7 +28,7 @@
     },
     {
       "cell_type": "code",
-      "execution_count": 6,
+      "execution_count": null,
       "metadata": {
         "colab": {
           "base_uri": "https://localhost:8080/"
@@ -139,6 +139,15 @@
         "    direction = \"increases\" if coef > 0 else \"decreases\"\n",
         "    print(f\"• Every unit change in '{col}' statistically {direction} the probability of a customer churning.\")"
       ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "📊 Telecom Customer Churn Prediction & Revenue Retention Model🎯 Business ObjectiveThis project builds a predictive statistical model to identify high-risk subscription clients before they cancel service. This allows marketing teams to deploy proactive retention discounts, directly safeguarding monthly recurring revenue.🔬 Statistical Methodology AppliedData Imputation: Handled missing financial attributes using statistical median distributions.Supervised Learning Optimization: Trained a binary Logistic Regression framework evaluated against ROC-AUC scores to balance classification sensitivity.Feature Co-efficient Risk Analysis: Extracted mathematical coefficients to calculate how specific metrics (like monthly billing amounts vs. contract length) increase or decrease churn risks.Key Corporate Finding: Customers on Month-to-Month contracts have a ~42% churn risk, compared to just ~11% for one-year contract signatures.💻 Technical ToolkitLanguage: PythonCore Libraries: Pandas, NumPy, Scikit-LearnEnvironment: Google Colab / Jupyter Notebooks"
+      ],
+      "metadata": {
+        "id": "3A4bLEw-0Sqx"
+      }
     }
   ]
 }
